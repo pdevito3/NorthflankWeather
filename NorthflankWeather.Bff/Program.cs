@@ -1,6 +1,7 @@
 using Duende.Bff;
 using Duende.Bff.AccessTokenManagement;
 using Duende.Bff.Yarp;
+using Microsoft.AspNetCore.HttpOverrides;
 using NorthflankWeather.Bff;
 using Serilog;
 using Serilog.Events;
@@ -47,7 +48,19 @@ try
 
     builder.Services.AddBffAuthentication(builder.Configuration, builder.Environment);
 
+    // Configure forwarded headers for reverse proxy (Northflank, Azure, etc.)
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+        // Trust all proxies in production - Northflank handles the external TLS
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+
     var app = builder.Build();
+
+    // Must be first to properly set scheme/host from reverse proxy headers
+    app.UseForwardedHeaders();
 
     app.UseSerilogRequestLogging(options =>
     {
