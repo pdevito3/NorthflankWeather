@@ -2,6 +2,7 @@ namespace NorthflankWeather.Server.Resources.Extensions;
 
 using Databases;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 public static class WebAppServiceConfiguration
 {
@@ -17,10 +18,15 @@ public static class WebAppServiceConfiguration
         builder.Services.AddSwaggerExtension(builder.Configuration);
         builder.Services.AddJwtBearerAuthentication(builder.Configuration, builder.Environment);
 
+        var connectionString = builder.Configuration.GetConnectionString(DatabaseConsts.DatabaseName);
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        var dataSource = dataSourceBuilder.Build();
+
+        builder.Services.AddSingleton(dataSource);
         builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
-            var connectionString = builder.Configuration.GetConnectionString(DatabaseConsts.DatabaseName);
-            options.UseNpgsql(connectionString)
+            var ds = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+            options.UseNpgsql(ds)
                 .UseSnakeCaseNamingConvention();
         });
         builder.EnrichNpgsqlDbContext<AppDbContext>();
