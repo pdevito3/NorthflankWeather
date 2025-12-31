@@ -139,14 +139,15 @@
                   ],
                   "healthChecks": [
                     {
-                      "type": "http",
+                      "type": "livenessProbe",
                       "protocol": "HTTP",
                       "path": "/health",
                       "port": 8080,
                       "initialDelaySeconds": 10,
                       "periodSeconds": 30,
                       "timeoutSeconds": 5,
-                      "failureThreshold": 3
+                      "failureThreshold": 3,
+                      "successThreshold": 1
                     }
                   ],
                   "runtimeEnvironment": {},
@@ -204,14 +205,15 @@
                   ],
                   "healthChecks": [
                     {
-                      "type": "http",
+                      "type": "livenessProbe",
                       "protocol": "HTTP",
                       "path": "/health",
                       "port": 8080,
                       "initialDelaySeconds": 10,
                       "periodSeconds": 30,
                       "timeoutSeconds": 5,
-                      "failureThreshold": 3
+                      "failureThreshold": 3,
+                      "successThreshold": 1
                     }
                   ],
                   "runtimeEnvironment": {
