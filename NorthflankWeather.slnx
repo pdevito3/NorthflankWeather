@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/tests/">
+    <Project Path="tests/NorthflankWeather.FunctionalTests/NorthflankWeather.FunctionalTests.csproj" />
+    <Project Path="tests/NorthflankWeather.IntegrationTests/NorthflankWeather.IntegrationTests.csproj" />
+    <Project Path="tests/NorthflankWeather.SharedTestHelpers/NorthflankWeather.SharedTestHelpers.csproj" />
+    <Project Path="tests/NorthflankWeather.UnitTests/NorthflankWeather.UnitTests.csproj" />
+  </Folder>
+  <Project Path="frontend/frontend.esproj">
+    <Build Solution="*|Any CPU" />
+  </Project>
+  <Project Path="NorthflankWeather.AppHost/NorthflankWeather.AppHost.csproj" />
+  <Project Path="NorthflankWeather.Bff/NorthflankWeather.Bff.csproj" />
+  <Project Path="NorthflankWeather.Server/NorthflankWeather.Server.csproj" />
+</Solution>
