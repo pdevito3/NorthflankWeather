@@ -43,7 +43,7 @@
                   "version": "17",
                   "billing": {
                     "replicas": 1,
-                    "storage": 2048,
+                    "storage": 4096,
                     "deploymentPlan": "nf-compute-20"
                   },
                   "tlsEnabled": true,
