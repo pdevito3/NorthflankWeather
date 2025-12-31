@@ -4,6 +4,8 @@ using Duende.Bff.Yarp;
 
 namespace NorthflankWeather.Bff;
 
+using Duende.AccessTokenManagement.OpenIdConnect;
+
 /// <summary>
 /// Extension methods for configuring BFF authentication.
 /// </summary>
@@ -31,6 +33,12 @@ public static class AuthExtensions
         var nameClaimType = configuration["Auth:NameClaimType"] ?? "name";
         var roleClaimType = configuration["Auth:RoleClaimType"] ?? "role";
         var revokeRefreshTokenOnLogout = configuration.GetValue("Auth:RevokeRefreshTokenOnLogout", true);
+        var refreshBeforeExpirationSeconds = configuration.GetValue("Auth:RefreshBeforeExpirationSeconds", 120);
+
+        services.AddOpenIdConnectAccessTokenManagement(options =>
+        {
+            options.RefreshBeforeExpiration = TimeSpan.FromSeconds(refreshBeforeExpirationSeconds);
+        });
 
         services.AddBff(options =>
         {
