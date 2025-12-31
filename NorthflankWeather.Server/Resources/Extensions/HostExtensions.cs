@@ -141,16 +141,12 @@ public static class HostExtensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Map health endpoints in Development and Testing environments
-        if (app.Environment.IsDevelopment() ||
-            app.Environment.EnvironmentName.Contains("Testing", StringComparison.OrdinalIgnoreCase))
+        // Health endpoints enabled in all environments for container orchestration
+        app.MapHealthChecks(HealthEndpointPath);
+        app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
         {
-            app.MapHealthChecks(HealthEndpointPath);
-            app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
-            {
-                Predicate = r => r.Tags.Contains("live")
-            });
-        }
+            Predicate = r => r.Tags.Contains("live")
+        });
 
         return app;
     }
