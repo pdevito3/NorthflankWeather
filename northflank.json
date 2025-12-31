@@ -10,7 +10,7 @@
     "PROJECT_NAME": "northflank-weather",
     "PROJECT_REGION": "us-east1",
     "GIT_REPO": "https://github.com/pdevito3/NorthflankWeather",
-    "GIT_BRANCH": "main",
+    "GIT_BRANCH": "northflank",
     "AUTH_AUTHORITY": "https://demo.duendesoftware.com",
     "AUTH_CLIENT_ID": "interactive.confidential",
     "AUTH_CLIENT_SECRET": "secret",
