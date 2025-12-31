@@ -44,7 +44,7 @@
                   "billing": {
                     "replicas": 1,
                     "storage": 2048,
-                    "deploymentPlan": "nf-compute-10"
+                    "deploymentPlan": "nf-compute-20"
                   },
                   "tlsEnabled": true,
                   "externalAccessEnabled": false
