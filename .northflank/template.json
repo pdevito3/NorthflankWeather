@@ -1,0 +1,231 @@
+{
+  "apiVersion": "v1.2",
+  "name": "NorthflankWeather",
+  "description": "Deploy NorthflankWeather - .NET Aspire app with BFF pattern",
+  "options": {
+    "autorun": false,
+    "concurrencyPolicy": "allow"
+  },
+  "arguments": {
+    "PROJECT_NAME": "northflank-weather",
+    "PROJECT_REGION": "us-east1",
+    "GIT_REPO": "https://github.com/pdevito3/NorthflankWeather",
+    "GIT_BRANCH": "main",
+    "AUTH_AUTHORITY": "https://demo.duendesoftware.com",
+    "AUTH_CLIENT_ID": "interactive.confidential",
+    "AUTH_CLIENT_SECRET": "secret",
+    "AUTH_AUDIENCE": "api"
+  },
+  "spec": {
+    "kind": "Workflow",
+    "spec": {
+      "type": "sequential",
+      "steps": [
+        {
+          "kind": "Project",
+          "ref": "project",
+          "spec": {
+            "name": "${args.PROJECT_NAME}",
+            "region": "${args.PROJECT_REGION}",
+            "networking": {
+              "allowedIngressProjects": []
+            }
+          }
+        },
+        {
+          "kind": "Workflow",
+          "spec": {
+            "type": "sequential",
+            "context": {
+              "projectId": "${refs.project.id}"
+            },
+            "steps": [
+              {
+                "kind": "Addon",
+                "ref": "postgres",
+                "spec": {
+                  "name": "postgres",
+                  "type": "postgresql",
+                  "version": "17",
+                  "billing": {
+                    "replicas": 1,
+                    "storage": 2048,
+                    "storageClass": "hdd",
+                    "deploymentPlan": "nf-compute-10"
+                  },
+                  "tlsEnabled": true,
+                  "externalAccessEnabled": false
+                }
+              },
+              {
+                "kind": "SecretGroup",
+                "ref": "secrets",
+                "spec": {
+                  "name": "app-secrets",
+                  "secretType": "environment-arguments",
+                  "priority": 10,
+                  "secrets": {
+                    "variables": {
+                      "Auth__Authority": "${args.AUTH_AUTHORITY}",
+                      "Auth__ClientId": "${args.AUTH_CLIENT_ID}",
+                      "Auth__ClientSecret": "${args.AUTH_CLIENT_SECRET}",
+                      "Auth__Audience": "${args.AUTH_AUDIENCE}",
+                      "Auth__RequireHttpsMetadata": "true",
+                      "Auth__NameClaimType": "name",
+                      "Auth__RoleClaimType": "role",
+                      "Auth__RevokeRefreshTokenOnLogout": "true",
+                      "ASPNETCORE_ENVIRONMENT": "Production"
+                    },
+                    "files": {}
+                  },
+                  "addonDependencies": [
+                    {
+                      "addonId": "${refs.postgres.id}",
+                      "keys": [
+                        {
+                          "keyName": "POSTGRES_URI",
+                          "aliases": ["ConnectionStrings__appdb"]
+                        }
+                      ]
+                    }
+                  ],
+                  "restrictions": {
+                    "restricted": false,
+                    "nfObjects": [],
+                    "tags": []
+                  }
+                }
+              },
+              {
+                "kind": "CombinedService",
+                "ref": "server",
+                "spec": {
+                  "name": "server",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-10",
+                    "buildPlan": "nf-compute-400-16"
+                  },
+                  "deployment": {
+                    "instances": 1,
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      },
+                      "shmSize": 64
+                    },
+                    "docker": {
+                      "configType": "default"
+                    }
+                  },
+                  "vcsData": {
+                    "projectType": "github",
+                    "projectUrl": "${args.GIT_REPO}",
+                    "projectBranch": "${args.GIT_BRANCH}"
+                  },
+                  "buildSettings": {
+                    "dockerfile": {
+                      "buildEngine": "kaniko",
+                      "dockerFilePath": "/NorthflankWeather.Server/Dockerfile",
+                      "dockerWorkDir": "/"
+                    }
+                  },
+                  "ports": [
+                    {
+                      "name": "http",
+                      "internalPort": 8080,
+                      "protocol": "HTTP",
+                      "public": false
+                    }
+                  ],
+                  "healthChecks": [
+                    {
+                      "type": "http",
+                      "protocol": "HTTP",
+                      "path": "/health",
+                      "port": 8080,
+                      "initialDelaySeconds": 10,
+                      "periodSeconds": 30,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3
+                    }
+                  ],
+                  "runtimeEnvironment": {},
+                  "runtimeFiles": {},
+                  "buildArguments": {},
+                  "buildFiles": {}
+                }
+              },
+              {
+                "kind": "CombinedService",
+                "ref": "bff",
+                "spec": {
+                  "name": "bff",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-10",
+                    "buildPlan": "nf-compute-400-16"
+                  },
+                  "deployment": {
+                    "instances": 1,
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      },
+                      "shmSize": 64
+                    },
+                    "docker": {
+                      "configType": "default"
+                    }
+                  },
+                  "vcsData": {
+                    "projectType": "github",
+                    "projectUrl": "${args.GIT_REPO}",
+                    "projectBranch": "${args.GIT_BRANCH}"
+                  },
+                  "buildSettings": {
+                    "dockerfile": {
+                      "buildEngine": "kaniko",
+                      "dockerFilePath": "/NorthflankWeather.Bff/Dockerfile",
+                      "dockerWorkDir": "/"
+                    }
+                  },
+                  "ports": [
+                    {
+                      "name": "http",
+                      "internalPort": 8080,
+                      "protocol": "HTTP",
+                      "public": true,
+                      "domains": [],
+                      "security": {
+                        "policies": [],
+                        "credentials": []
+                      },
+                      "disableNfDomain": false
+                    }
+                  ],
+                  "healthChecks": [
+                    {
+                      "type": "http",
+                      "protocol": "HTTP",
+                      "path": "/health",
+                      "port": 8080,
+                      "initialDelaySeconds": 10,
+                      "periodSeconds": 30,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3
+                    }
+                  ],
+                  "runtimeEnvironment": {
+                    "services__server__http__0": "http://server:8080"
+                  },
+                  "runtimeFiles": {},
+                  "buildArguments": {},
+                  "buildFiles": {}
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
