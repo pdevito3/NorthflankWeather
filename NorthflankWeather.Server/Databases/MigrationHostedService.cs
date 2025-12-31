@@ -20,7 +20,8 @@ public class MigrationHostedService<TDbContext>(
         {
             _logger.Information("Applying migrations for {DbContext}", typeof(TDbContext).Name);
 
-            var connectionString = configuration.GetConnectionString(DatabaseConsts.DatabaseName);
+            var connectionString = ConnectionStringHelper.ConvertPostgresUri(
+                configuration.GetConnectionString(DatabaseConsts.DatabaseName));
 
             if (string.IsNullOrEmpty(connectionString))
             {
