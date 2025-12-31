@@ -2,7 +2,7 @@
   "apiVersion": "v1.2",
   "arguments": {
     "PROJECT_NAME": "northflank-weather",
-    "PROJECT_REGION": "us-east1",
+    "PROJECT_REGION": "us-central",
     "GIT_REPO": "https://github.com/pdevito3/NorthflankWeather",
     "GIT_BRANCH": "northflank",
     "AUTH_AUTHORITY": "https://demo.duendesoftware.com",
