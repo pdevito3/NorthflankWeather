@@ -146,8 +146,7 @@
                       "initialDelaySeconds": 10,
                       "periodSeconds": 30,
                       "timeoutSeconds": 5,
-                      "failureThreshold": 3,
-                      "successThreshold": 1
+                      "failureThreshold": 3
                     }
                   ],
                   "runtimeEnvironment": {},
@@ -212,8 +211,7 @@
                       "initialDelaySeconds": 10,
                       "periodSeconds": 30,
                       "timeoutSeconds": 5,
-                      "failureThreshold": 3,
-                      "successThreshold": 1
+                      "failureThreshold": 3
                     }
                   ],
                   "runtimeEnvironment": {
