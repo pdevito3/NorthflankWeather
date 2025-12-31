@@ -44,7 +44,6 @@
                   "billing": {
                     "replicas": 1,
                     "storage": 2048,
-                    "storageClass": "ssd",
                     "deploymentPlan": "nf-compute-10"
                   },
                   "tlsEnabled": true,
